@@ -1,2 +1,2 @@
-# vendas
-Projeto básico desenvolvido durante curso básico de spring boot
+# Vendas - API Rest
+###### Projeto básico desenvolvido durante curso de spring boot.
