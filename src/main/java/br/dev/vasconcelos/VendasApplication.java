@@ -11,6 +11,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @SpringBootApplication
 @RestController
 public class VendasApplication {
@@ -20,7 +22,14 @@ public class VendasApplication {
         return args -> {
             Cliente cliente = new Cliente();
             cliente.setNome("André");
-            clientes.salvar( cliente );
+            clientes.save( cliente );
+
+            Cliente cliente2 = new Cliente();
+            cliente2.setNome("Rebeca");
+            clientes.save( cliente2 );
+
+            List<Cliente> todosClientes = clientes.searchAll();
+            todosClientes.forEach(System.out::println);
         };
     }
 

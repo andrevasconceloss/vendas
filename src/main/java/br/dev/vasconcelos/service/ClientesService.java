@@ -13,7 +13,7 @@ public class ClientesService {
 
     public void salvar(Cliente cliente){
         validar(cliente);
-        repository.salvar(cliente);
+        repository.save(cliente);
     }
 
     public void validar(Cliente cliente){
