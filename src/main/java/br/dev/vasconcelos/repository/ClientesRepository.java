@@ -22,7 +22,6 @@ public class ClientesRepository {
     private JdbcTemplate jdbcTemplate;
 
     public Cliente save(Cliente cliente) {
-        // Salva cliente na base
         jdbcTemplate.update( INSERT, new Object[]{cliente.getNome()} );
         return cliente;
     }
@@ -62,5 +61,4 @@ public class ClientesRepository {
             }
         };
     }
-
 }
