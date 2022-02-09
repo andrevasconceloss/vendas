@@ -1,10 +1,13 @@
 package br.dev.vasconcelos.model;
 
+import lombok.Data;
+
 import javax.persistence.*;
 
 @Entity
 @Table(name = "cliente")
-public class Cliente {
+public @Data
+class Cliente {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

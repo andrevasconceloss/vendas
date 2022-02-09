@@ -2,63 +2,57 @@ package br.dev.vasconcelos.repository;
 
 import br.dev.vasconcelos.model.Cliente;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import java.util.List;
 
 @Repository
 public class ClientesRepository {
 
-    private static String INSERT = " INSERT INTO CLIENTE (NOME) VALUES (?) ";
-    private static String UPDATE = " UPDATE CLIENTE SET NOME= ? WHERE ID= ? ";
-    private static String DELETE = " DELETE FROM CLIENTE WHERE ID= ? ";
-    private static String SELECT = " SELECT * FROM CLIENTE ";
-
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private EntityManager entityManager;
 
+    @Transactional
     public Cliente save(Cliente cliente) {
-        jdbcTemplate.update( INSERT, new Object[]{cliente.getNome()} );
+        entityManager.persist( cliente );
         return cliente;
     }
 
+    @Transactional
     public Cliente update(Cliente cliente) {
-        jdbcTemplate.update(UPDATE, new Object[]{cliente.getNome(), cliente.getId()});
+        entityManager.merge( cliente );
         return cliente;
     }
 
+    @Transactional
     public void delete(Cliente cliente) {
-        jdbcTemplate.update(DELETE, new Object[]{cliente.getId()});
+        if (!entityManager.contains(cliente)) {
+            cliente = entityManager.merge( cliente );
+        }
+        entityManager.remove( cliente );
     }
 
+    @Transactional
     public void delete(Integer id) {
-        jdbcTemplate.update(DELETE, id);
+        Cliente cliente = entityManager.find( Cliente.class, id );
+        delete( cliente );
     }
 
-    public List<Cliente> searchForName(String name) {
-        return jdbcTemplate.query(
-                SELECT.concat(" WHERE UPPER(NOME) LIKE ? "),
-                new Object[]{"%" + name.toUpperCase() + "%"},
-                getClienteMapper());
+    @Transactional(readOnly = true)
+    public List<Cliente> searchForName(String nome) {
+        String jpql = " select c from Cliente c where upper(c.nome) like :nome ";
+        TypedQuery<Cliente> query = entityManager.createQuery( jpql, Cliente.class );
+        query.setParameter("nome", "%" + nome + "%");
+        return query.getResultList();
     }
 
+    @Transactional(readOnly = true)
     public List<Cliente> searchAll() {
-        return jdbcTemplate.query(SELECT, getClienteMapper());
-    }
-
-    private RowMapper<Cliente> getClienteMapper() {
-        return new RowMapper<Cliente>() {
-            @Override
-            public Cliente mapRow(ResultSet resultSet, int i) throws SQLException {
-                Cliente cliente = new Cliente();
-                cliente.setNome(resultSet.getString("nome"));
-                cliente.setId(resultSet.getInt("id"));
-                return cliente;
-            }
-        };
+        return entityManager
+                .createQuery( "from Cliente", Cliente.class )
+                .getResultList();
     }
 }
