@@ -32,16 +32,16 @@ public class ClientesRepository {
     }
 
     public void delete(Cliente cliente) {
-        jdbcTemplate.update(UPDATE, new Object[]{cliente.getId()});
+        jdbcTemplate.update(DELETE, new Object[]{cliente.getId()});
     }
 
     public void delete(Integer id) {
-        jdbcTemplate.update(UPDATE, id);
+        jdbcTemplate.update(DELETE, id);
     }
 
     public List<Cliente> searchForName(String name) {
         return jdbcTemplate.query(
-                SELECT.concat(" WHERE UPPER(NAME) LIKE ? "),
+                SELECT.concat(" WHERE UPPER(NOME) LIKE ? "),
                 new Object[]{"%" + name.toUpperCase() + "%"},
                 getClienteMapper());
     }
