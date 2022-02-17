@@ -1,13 +1,16 @@
 package br.dev.vasconcelos.model;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
+@Data
 @Table(name = "cliente")
-public @Data
-class Cliente {
+public class Cliente {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -17,8 +20,11 @@ class Cliente {
     @Column(name = "nome", length = 100, nullable = false)
     private String nome;
 
-    public Cliente() {
+    @EqualsAndHashCode.Exclude @ToString.Exclude
+    @OneToMany(mappedBy = "cliente", fetch = FetchType.EAGER)
+    private List<Pedido> pedidos;
 
+    public Cliente() {
     }
 
     public Cliente(String name) {

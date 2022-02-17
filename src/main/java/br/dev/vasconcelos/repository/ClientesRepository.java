@@ -1,58 +1,35 @@
 package br.dev.vasconcelos.repository;
 
 import br.dev.vasconcelos.model.Cliente;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
 import java.util.List;
 
-@Repository
-public class ClientesRepository {
 
-    @Autowired
-    private EntityManager entityManager;
+public interface ClientesRepository extends JpaRepository<Cliente, Integer> {
 
-    @Transactional
-    public Cliente save(Cliente cliente) {
-        entityManager.persist( cliente );
-        return cliente;
-    }
+    List<Cliente> findByNomeLike(String nome);
 
-    @Transactional
-    public Cliente update(Cliente cliente) {
-        entityManager.merge( cliente );
-        return cliente;
-    }
+    @Query(value = " select * from cliente where upper(nome) ilike %:nome% ", nativeQuery = true)
+    //@Query(value = " select c from Cliente c where upper(c.nome) like %:nome% ")
+    List<Cliente> findByNomeIlike(@Param("nome") String nome);
 
-    @Transactional
-    public void delete(Cliente cliente) {
-        if (!entityManager.contains(cliente)) {
-            cliente = entityManager.merge( cliente );
-        }
-        entityManager.remove( cliente );
-    }
+    @Query(value = " delete from cliente where id = :id", nativeQuery = true)
+    @Modifying
+    void deleteById(@Param("id") Integer id);
 
-    @Transactional
-    public void delete(Integer id) {
-        Cliente cliente = entityManager.find( Cliente.class, id );
-        delete( cliente );
-    }
+    Cliente findOneById(Integer id);
 
-    @Transactional(readOnly = true)
-    public List<Cliente> searchForName(String nome) {
-        String jpql = " select c from Cliente c where upper(c.nome) like :nome ";
-        TypedQuery<Cliente> query = entityManager.createQuery( jpql, Cliente.class );
-        query.setParameter("nome", "%" + nome + "%");
-        return query.getResultList();
-    }
+    List<Cliente> findByNomeOrIdOrderByNome(String nome, Integer id);
 
-    @Transactional(readOnly = true)
-    public List<Cliente> searchAll() {
-        return entityManager
-                .createQuery( "from Cliente", Cliente.class )
-                .getResultList();
-    }
+    Cliente findOneByNome(String nome);
+
+    boolean existsByNome(String nome);
+
+    @Query(" select c from Cliente c left join fetch c.pedidos where c.id = :id ")
+    Cliente findClienteFetchPedidos( @Param("id") Integer id );
+
 }
