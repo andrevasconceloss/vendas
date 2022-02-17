@@ -1,6 +1,6 @@
-package br.dev.vasconcelos.repository;
+package br.dev.vasconcelos.domain.repository;
 
-import br.dev.vasconcelos.model.Cliente;
+import br.dev.vasconcelos.domain.entity.Cliente;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

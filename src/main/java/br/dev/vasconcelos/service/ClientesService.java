@@ -1,7 +1,7 @@
 package br.dev.vasconcelos.service;
 
-import br.dev.vasconcelos.model.Cliente;
-import br.dev.vasconcelos.repository.ClientesRepository;
+import br.dev.vasconcelos.domain.entity.Cliente;
+import br.dev.vasconcelos.domain.repository.ClientesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 

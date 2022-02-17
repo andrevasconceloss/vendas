@@ -1,4 +1,4 @@
-package br.dev.vasconcelos.model;
+package br.dev.vasconcelos.domain.entity;
 
 import lombok.Data;
 
