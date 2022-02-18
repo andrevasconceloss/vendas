@@ -1,5 +1,6 @@
 package br.dev.vasconcelos.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -20,6 +21,10 @@ public class Cliente {
     @Column(name = "nome", length = 100, nullable = false)
     private String nome;
 
+    @Column(name = "cpf", length = 11, nullable = false)
+    private String cpf;
+
+    @JsonIgnore
     @EqualsAndHashCode.Exclude @ToString.Exclude
     @OneToMany(mappedBy = "cliente", fetch = FetchType.EAGER)
     private List<Pedido> pedidos;
