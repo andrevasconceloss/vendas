@@ -1,6 +1,5 @@
 package br.dev.vasconcelos.rest.controller;
 
-import br.dev.vasconcelos.domain.entity.Cliente;
 import br.dev.vasconcelos.domain.entity.Produto;
 import br.dev.vasconcelos.domain.repository.ProdutosRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +56,7 @@ public class ProdutoController {
     }
 
     @GetMapping
-    public List<Cliente> find(Produto filtro ) {
+    public List<Produto> find(Produto filtro ) {
         ExampleMatcher matcher = ExampleMatcher
                 .matching()
                 .withIgnoreCase()
