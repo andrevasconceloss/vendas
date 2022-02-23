@@ -38,7 +38,7 @@ public class PedidoController {
         repository.findById(id)
                 .map(pedido -> {
                     repository.delete(pedido);
-                    return ResponseEntity.noContent();
+                    return Void.TYPE;
                 })
                 .orElseThrow( () -> new ResponseStatusException(NOT_FOUND, "Pedido não encontrado"));
     }

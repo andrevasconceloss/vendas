@@ -38,7 +38,7 @@ public class ProdutoController {
         repository.findById(id)
                 .map(produto -> {
                     repository.delete(produto);
-                    return ResponseEntity.noContent();
+                    return Void.TYPE;
                 })
                 .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Produto não encontrado"));
     }
