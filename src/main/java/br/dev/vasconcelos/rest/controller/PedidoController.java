@@ -1,69 +1,80 @@
 package br.dev.vasconcelos.rest.controller;
 
+import br.dev.vasconcelos.domain.entity.ItemPedido;
 import br.dev.vasconcelos.domain.entity.Pedido;
-import br.dev.vasconcelos.domain.repository.PedidoRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.ExampleMatcher;
-import static org.springframework.http.HttpStatus.*;
-import org.springframework.http.ResponseEntity;
+import br.dev.vasconcelos.domain.enums.StatusPedido;
+import br.dev.vasconcelos.rest.dto.AtualizacaoStatusPedidoDTO;
+import br.dev.vasconcelos.rest.dto.InformacaoItemPedidoDTO;
+import br.dev.vasconcelos.rest.dto.InformacoesPedidoDTO;
+import br.dev.vasconcelos.rest.dto.PedidoDTO;
+import br.dev.vasconcelos.service.PedidoService;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.springframework.http.HttpStatus.*;
 
 @RestController
 @RequestMapping("/pedidos")
 public class PedidoController {
 
-    @Autowired
-    private PedidoRepository repository;
+    private PedidoService service;
+
+    public PedidoController(PedidoService service) {
+        this.service = service;
+    }
 
     @PostMapping
     @ResponseStatus(CREATED)
-    public Pedido save(@RequestBody Pedido pedido){
-        return repository.save(pedido);
+    public Integer save(@RequestBody PedidoDTO dto) {
+        Pedido pedido = service.salvar(dto);
+        return pedido.getId();
     }
 
-    @GetMapping("/id")
-    public Pedido getPedidoById(@PathVariable Integer id) {
-        return repository
-                .findById(id)
-                .orElseThrow( () -> new ResponseStatusException(NOT_FOUND, "Pedido não encontrado"));
+    @GetMapping("{id}")
+    public InformacoesPedidoDTO getById(@PathVariable Integer id) {
+        return service
+                .obterPedidoCompleto(id)
+                .map(pedido -> converter(pedido))
+                .orElseThrow(()-> new ResponseStatusException(NOT_FOUND, "Pedido não encontrado."));
     }
 
-    @DeleteMapping("{id}")
+    @PatchMapping("{id}")
     @ResponseStatus(NO_CONTENT)
-    public void delete(@PathVariable Integer id) {
-        repository.findById(id)
-                .map(pedido -> {
-                    repository.delete(pedido);
-                    return Void.TYPE;
-                })
-                .orElseThrow( () -> new ResponseStatusException(NOT_FOUND, "Pedido não encontrado"));
+    public void updateStatus(@PathVariable Integer id, @RequestBody AtualizacaoStatusPedidoDTO dto){
+        service.atualizarStatus(id, StatusPedido.valueOf(dto.getNovoStatus()));
     }
 
-    @PutMapping("/{id}")
-    @ResponseStatus(NO_CONTENT)
-    public void update(@PathVariable Integer id, @RequestBody Pedido pedido){
-        repository.findById(id)
-                .map(pedidoEncontrado -> {
-                    pedido.setId(pedidoEncontrado.getId());
-                    repository.save(pedido);
-                    return pedidoEncontrado;
-                })
-                .orElseThrow( () -> new ResponseStatusException(NOT_FOUND, "Pedido não encontrado"));
+    private InformacoesPedidoDTO converter(Pedido pedido){
+        return InformacoesPedidoDTO
+                .builder()
+                .codigo(pedido.getId())
+                .dataPedido(pedido.getData_pedido().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")))
+                .cfp(pedido.getCliente().getCpf())
+                .nomeCliente(pedido.getCliente().getNome())
+                .total(pedido.getTotal())
+                .status(pedido.getStatus().name())
+                .itens(converter(pedido.getItens()))
+                .build();
     }
 
-    @GetMapping
-    public List<Pedido> find(Pedido filtro ) {
-        ExampleMatcher matcher = ExampleMatcher
-                .matching()
-                .withIgnoreCase()
-                .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
+    private List<InformacaoItemPedidoDTO> converter(List<ItemPedido> itens) {
+        if (CollectionUtils.isEmpty(itens)){
+            return Collections.emptyList();
+        }
 
-        Example example = Example.of(filtro, matcher);
-
-        return repository.findAll(example);
+        return itens.stream()
+                .map(item -> InformacaoItemPedidoDTO
+                        .builder()
+                        .descricao(item.getProduto().getDescricao())
+                        .precoUnitario(item.getProduto().getPreco_unitario())
+                        .quantidade(item.getQuantidade())
+                        .build())
+                .collect(Collectors.toList());
     }
 }

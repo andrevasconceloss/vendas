@@ -1,14 +1,15 @@
 package br.dev.vasconcelos.domain.entity;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "item_pedido")
-public @Data class ItemPedido {
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class ItemPedido {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

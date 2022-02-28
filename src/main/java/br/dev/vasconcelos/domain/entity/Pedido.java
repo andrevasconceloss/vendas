@@ -1,8 +1,7 @@
 package br.dev.vasconcelos.domain.entity;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import br.dev.vasconcelos.domain.enums.StatusPedido;
+import lombok.*;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -11,6 +10,8 @@ import java.util.List;
 
 @Entity
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "pedido")
 public class Pedido {
 
@@ -29,6 +30,10 @@ public class Pedido {
 
     @Column(name = "total", precision = 20, scale = 2)
     private BigDecimal total;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private StatusPedido status;
 
     @EqualsAndHashCode.Exclude @ToString.Exclude
     @OneToMany(mappedBy = "pedido", fetch = FetchType.EAGER)

@@ -1,9 +1,7 @@
 package br.dev.vasconcelos.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.List;
@@ -11,6 +9,8 @@ import java.util.List;
 @Entity
 @Data
 @Table(name = "cliente")
+@NoArgsConstructor
+@AllArgsConstructor
 public class Cliente {
 
     @Id
@@ -28,9 +28,6 @@ public class Cliente {
     @EqualsAndHashCode.Exclude @ToString.Exclude
     @OneToMany(mappedBy = "cliente", fetch = FetchType.EAGER)
     private List<Pedido> pedidos;
-
-    public Cliente() {
-    }
 
     public Cliente(String name) {
         this.nome = name;
