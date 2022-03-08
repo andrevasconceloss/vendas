@@ -2,6 +2,7 @@ package br.dev.vasconcelos.service.impl;
 
 import br.dev.vasconcelos.domain.entity.Usuario;
 import br.dev.vasconcelos.domain.repository.UsuarioRepository;
+import br.dev.vasconcelos.exception.SenhaInvalidaException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,6 +24,17 @@ public class UsuarioServiceImpl implements UserDetailsService {
     @Transactional
     public Usuario salvar(Usuario usuario){
         return repository.save(usuario);
+    }
+
+    public UserDetails autenticar(Usuario usuario){
+        UserDetails user = loadUserByUsername(usuario.getLogin());
+        boolean isValidPassword = encoder.matches(usuario.getSenha(), user.getPassword());
+
+        if (isValidPassword){
+            return user;
+        }
+
+        throw new SenhaInvalidaException();
     }
 
     @Override

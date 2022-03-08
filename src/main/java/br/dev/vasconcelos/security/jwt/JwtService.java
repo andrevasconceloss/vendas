@@ -63,16 +63,16 @@ public class JwtService {
         return (String)  obterClaims(token).getSubject();
     }
 
-    public static void main(String[] args){
-        ConfigurableApplicationContext context = SpringApplication.run(VendasApplication.class);
-        JwtService service = context.getBean(JwtService.class);
-        Usuario usuario = Usuario.builder().login("andreFilho").build();
-        String token = service.gerarToken(usuario);
-        System.out.println(token);
-
-        boolean isTokenValido = service.tokenValido(token);
-        System.out.println("Token válido: " + isTokenValido);
-
-        System.out.println(service.obterLoginUsuario(token));
-    }
+//    public static void main(String[] args){
+//        ConfigurableApplicationContext context = SpringApplication.run(VendasApplication.class);
+//        JwtService service = context.getBean(JwtService.class);
+//        Usuario usuario = Usuario.builder().login("andreFilho").build();
+//        String token = service.gerarToken(usuario);
+//        System.out.println(token);
+//
+//        boolean isTokenValido = service.tokenValido(token);
+//        System.out.println("Token válido: " + isTokenValido);
+//
+//        System.out.println(service.obterLoginUsuario(token));
+//    }
 }
